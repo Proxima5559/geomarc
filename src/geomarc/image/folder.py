@@ -3,6 +3,7 @@ from pathlib import Path
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
 from .watermark import apply_watermark
 from geomarc.constants import SUPPORTED_EXTENSIONS
+from geomarc.utils.seed import _generate_seed as _file_seed
 
 def process_folder(
     input_dir: str | Path,
@@ -85,12 +86,3 @@ def process_folder(
             progress.advance(task)
 
     return processed, skipped
-
-
-def _file_seed(seed: int | None, file_path: Path) -> int | None:
-    if seed is None:
-        return None
-    
-    unique_str = f"{seed}_{file_path.name}"
-    hash_bytes = hashlib.sha256(unique_str.encode("utf-8")).digest()
-    return int.from_bytes(hash_bytes, byteorder="big") % (2**32)

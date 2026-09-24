@@ -12,6 +12,7 @@ from .placement_con import (
     MAX_DIMENSION_RATIO,
     ATTEMPTS_MULTIPLIER,
 )
+from .docx_con import _COORD_SIZE, _DEFAULT_PAGE_WIDTH_PT, _DEFAULT_PAGE_HEIGHT_PT
 
 __all__ = [
     "COMPLEXITY_SETTINGS",
@@ -24,4 +25,7 @@ __all__ = [
     "MAX_ROTATION",
     "MAX_DIMENSION_RATIO",
     "ATTEMPTS_MULTIPLIER",
+    "_COORD_SIZE",
+    "_DEFAULT_PAGE_WIDTH_PT",
+    "_DEFAULT_PAGE_HEIGHT_PT",
 ]

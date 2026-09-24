@@ -1,12 +1,11 @@
 from pathlib import Path
 
 import pymupdf  
-import hashlib
 
 from ..generator.pattern import generate_pattern
 from ..generator.placement import generate_placements
 from ..renders.pdf_render import render_pattern
-
+from ..utils.seed import _generate_seed
 
 def apply_watermark(
     input_path: str | Path,
@@ -185,13 +184,3 @@ def _apply_page_watermark(
             line_width=line_width,
             opacity=opacity,
         )
-
-
-def _generate_seed(base_seed: int | None, *args: str | int) -> int | None:
-    if base_seed is None:
-        return None
-    
-    unique_str = f"{base_seed}_" + "_".join(map(str, args))
-    hash_bytes = hashlib.sha256(unique_str.encode("utf-8")).digest()
-    
-    return int.from_bytes(hash_bytes, byteorder="big") % 4294967296

@@ -5,7 +5,7 @@ from PIL import Image, UnidentifiedImageError
 from ..generator.pattern import generate_pattern
 from ..generator.placement import generate_placements
 from ..renders.img_render import render_pattern
-
+from ..utils.seed import _pattern_seed
 
 def apply_watermark(
     input_path: str | Path,
@@ -146,16 +146,6 @@ def _create_overlay(
         )
 
     return overlay
-
-
-def _pattern_seed(
-    seed: int | None,
-    index: int,
-) -> int | None:
-    if seed is None:
-        return None
-
-    return seed + index + 1
 
 
 def _save_image(
