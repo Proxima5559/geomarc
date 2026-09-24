@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 from geomarc.generator.pattern import Pattern, Line, Polygon, Point
 from geomarc.generator.placement import Placement
-from geomarc.pdf.pdf_render import render_pattern
+from geomarc.renders.pdf_render import render_pattern
 
 
 @pytest.fixture

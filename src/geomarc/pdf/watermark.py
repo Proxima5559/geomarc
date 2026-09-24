@@ -5,7 +5,7 @@ import hashlib
 
 from ..generator.pattern import generate_pattern
 from ..generator.placement import generate_placements
-from .pdf_render import render_pattern
+from ..renders.pdf_render import render_pattern
 
 
 def apply_watermark(
