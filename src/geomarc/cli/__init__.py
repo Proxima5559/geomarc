@@ -4,6 +4,7 @@ from .image_cli import image
 from .folder_cli import folder
 from .pdf_cli import pdf
 
+
 @click.group()
 @click.version_option(version="0.1.1")
 def cli() -> None:

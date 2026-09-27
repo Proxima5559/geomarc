@@ -1,4 +1,3 @@
-import hashlib
 from pathlib import Path
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
 from .watermark import apply_watermark
