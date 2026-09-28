@@ -11,6 +11,8 @@ from .placement_con import (
     MAX_ROTATION,
     MAX_DIMENSION_RATIO,
     ATTEMPTS_MULTIPLIER,
+    EDGE_MARGIN_RATIO,
+    MIN_SPACING_RATIO,
 )
 
 __all__ = [
@@ -24,4 +26,6 @@ __all__ = [
     "MAX_ROTATION",
     "MAX_DIMENSION_RATIO",
     "ATTEMPTS_MULTIPLIER",
+    "EDGE_MARGIN_RATIO",
+    "MIN_SPACING_RATIO",
 ]
