@@ -15,7 +15,7 @@ def is_valid_placement(
     candidate_box = expanded_bounding_box(candidate, spacing)
 
     for placement in existing:
-        existing_box = bounding_box(placement) 
+        existing_box = expanded_bounding_box(placement, spacing)
 
         if boxes_overlap(candidate_box, existing_box):
             return False

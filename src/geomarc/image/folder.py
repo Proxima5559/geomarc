@@ -3,6 +3,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskPr
 from .watermark import apply_watermark
 from geomarc.constants import SUPPORTED_EXTENSIONS
 from geomarc.utils.seed import _generate_seed as _file_seed
+from geomarc.generator.placement import ProtectedRegion
 
 def process_folder(
     input_dir: str | Path,
@@ -13,6 +14,7 @@ def process_folder(
     seed: int | None = None,
     count: int = 5,
     on_unsupported: str = "skip",
+    protected_regions: list[ProtectedRegion] | None = None,
 ) -> tuple[int, int]:
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -74,6 +76,7 @@ def process_folder(
                     opacity=opacity,
                     seed=_file_seed(seed, input_path),
                     count=count,
+                    protected_regions=protected_regions,
                 )
                 processed += 1
 

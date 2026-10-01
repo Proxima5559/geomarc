@@ -8,11 +8,19 @@ from geomarc.constants import (
     MIN_COUNT,
     MIN_ROTATION,
 )
-from geomarc.constants.placement_con import MAX_SCALE, MIN_SCALE
+from geomarc.constants.placement_con import (
+    MAX_SCALE,
+    MIN_SCALE,
+)
 
+from .bounds import bounding_box
 from .collision import is_valid_placement
 from .models import Placement
 from .position import generate_position
+from .protected import (
+    ProtectedRegion,
+    intersects_protected_region,
+)
 from .size import generate_size
 
 
@@ -21,6 +29,7 @@ def generate_placements(
     image_height: int,
     count: int = 5,
     seed: int | None = None,
+    protected_regions: list[ProtectedRegion] | None = None,
 ) -> tuple[Placement, ...]:
     if image_width <= 0 or image_height <= 0:
         raise ValueError(
@@ -33,13 +42,26 @@ def generate_placements(
             f"{MIN_COUNT} and {MAX_COUNT}"
         )
 
+    if protected_regions is None:
+        protected_regions = []
+
+    _validate_protected_regions(
+        protected_regions=protected_regions,
+        image_width=image_width,
+        image_height=image_height,
+    )
+
     rng = random.Random(seed)
 
     placements: list[Placement] = []
 
     dynamic_max_scale = MAX_SCALE
+
     if count > 3:
-        dynamic_max_scale = max(MIN_SCALE, MAX_SCALE / math.sqrt(count / 3.0))
+        dynamic_max_scale = max(
+            MIN_SCALE,
+            MAX_SCALE / math.sqrt(count / 3.0),
+        )
 
     max_attempts = (
         count
@@ -51,6 +73,7 @@ def generate_placements(
             image_width=image_width,
             image_height=image_height,
             existing=placements,
+            protected_regions=protected_regions,
             rng=rng,
             max_attempts=max_attempts,
             max_scale_override=dynamic_max_scale,
@@ -65,6 +88,7 @@ def _find_placement(
     image_width: int,
     image_height: int,
     existing: list[Placement],
+    protected_regions: list[ProtectedRegion],
     rng: random.Random,
     max_attempts: int,
     max_scale_override: float,
@@ -99,15 +123,44 @@ def _find_placement(
             rotation=rotation,
         )
 
-        if is_valid_placement(
+        if not is_valid_placement(
             candidate=candidate,
             existing=existing,
             image_width=image_width,
             image_height=image_height,
         ):
-            return candidate
+            continue
+
+        candidate_box = bounding_box(candidate)
+
+        if intersects_protected_region(
+            placement_box=candidate_box,
+            protected_regions=protected_regions,
+        ):
+            continue
+
+        return candidate
 
     raise RuntimeError(
         f"Could not find valid placement "
         f"after {max_attempts} attempts"
     )
+
+
+def _validate_protected_regions(
+    protected_regions: list[ProtectedRegion],
+    image_width: int,
+    image_height: int,
+) -> None:
+    for region in protected_regions:
+        if region.right > image_width:
+            raise ValueError(
+                "Protected region right edge "
+                "cannot exceed image width"
+            )
+
+        if region.bottom > image_height:
+            raise ValueError(
+                "Protected region bottom edge "
+                "cannot exceed image height"
+            )

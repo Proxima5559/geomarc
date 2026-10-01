@@ -3,7 +3,11 @@ import click
 from rich.console import Console
 
 from geomarc.image.folder import process_folder
-from geomarc.cli.common import common_watermark_options
+from geomarc.cli.common import (
+    common_watermark_options,
+    parse_protected_regions,
+)
+
 
 console = Console()
 
@@ -46,6 +50,7 @@ def folder(
     seed: int | None,
     count: int,
     on_unsupported: str,
+    protect: tuple[str, ...],
 ) -> None:
     """Apply a geometric watermark to all images in a folder."""
 
@@ -53,7 +58,15 @@ def folder(
         raise click.UsageError(
             "Input and output directories must be different."
         )
-
+    try:
+        protected_regions = parse_protected_regions(
+            protect,
+        )
+    except click.BadParameter as error:
+        raise click.UsageError(
+            str(error)
+        ) from error
+    
     try:
         with console.status("[bold]Processing folder..."):
             processed, skipped = process_folder(
@@ -65,6 +78,7 @@ def folder(
                 seed=seed,
                 count=count,
                 on_unsupported=on_unsupported.lower(),
+                protected_regions=protected_regions,
             )
 
     except (ValueError, NotADirectoryError, FileNotFoundError) as error:

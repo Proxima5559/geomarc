@@ -1,15 +1,64 @@
 import click
+from geomarc.generator.placement import ProtectedRegion
+
+def parse_protected_regions(
+    values: tuple[str, ...],
+) -> list[ProtectedRegion]:
+    regions = []
+
+    for value in values:
+        parts = value.split(",")
+
+        if len(parts) != 4:
+            raise click.BadParameter(
+                "Protected region must have "
+                "4 values: left,top,right,bottom"
+            )
+
+        try:
+            left, top, right, bottom = (
+                float(part.strip())
+                for part in parts
+            )
+        except ValueError as error:
+            raise click.BadParameter(
+                "Protected region coordinates "
+                "must be numbers"
+            ) from error
+
+        try:
+            region = ProtectedRegion(
+                left=left,
+                top=top,
+                right=right,
+                bottom=bottom,
+            )
+        except ValueError as error:
+            raise click.BadParameter(
+                str(error)
+            ) from error
+
+        regions.append(region)
+
+    return regions
+
 
 def common_watermark_options(func):
+
     options = [
+
         click.option(
             "--complexity",
             "-c",
-            type=click.Choice(["low", "medium", "high"], case_sensitive=False),
+            type=click.Choice(
+                ["low", "medium", "high"],
+                case_sensitive=False,
+            ),
             default="medium",
             show_default=True,
             help="Complexity of the generated pattern.",
         ),
+
         click.option(
             "--line-width",
             "-w",
@@ -18,6 +67,7 @@ def common_watermark_options(func):
             show_default=True,
             help="Width of watermark lines.",
         ),
+
         click.option(
             "--opacity",
             "-o",
@@ -26,6 +76,7 @@ def common_watermark_options(func):
             show_default=True,
             help="Watermark opacity.",
         ),
+
         click.option(
             "--seed",
             "-s",
@@ -33,6 +84,7 @@ def common_watermark_options(func):
             default=None,
             help="Seed used to generate a deterministic pattern.",
         ),
+
         click.option(
             "--count",
             "-n",
@@ -41,7 +93,21 @@ def common_watermark_options(func):
             show_default=True,
             help="Number of watermark patterns to generate.",
         ),
+
+        click.option(
+            "--protect",
+            "-p",
+            multiple=True,
+            type=str,
+            help=(
+                "Protected region in the form "
+                "left,top,right,bottom. "
+                "Can be specified multiple times."
+            ),
+        ),
     ]
+
     for option in reversed(options):
         func = option(func)
+
     return func

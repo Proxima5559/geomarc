@@ -3,7 +3,10 @@ import click
 from rich.console import Console
 
 from geomarc.image.watermark import apply_watermark
-from geomarc.cli.common import common_watermark_options
+from geomarc.cli.common import (
+    common_watermark_options,
+    parse_protected_regions,
+)
 
 console = Console()
 
@@ -39,6 +42,7 @@ def image(
     opacity: int,
     seed: int | None,
     count: int,
+    protect: tuple[str, ...],
 ) -> None:
     """Apply a geometric watermark to a single image."""
 
@@ -46,6 +50,14 @@ def image(
         raise click.UsageError(
             "Input and output files must be different."
         )
+    try:
+        protected_regions = parse_protected_regions(
+            protect,
+        )
+    except click.BadParameter as error:
+        raise click.UsageError(
+            str(error)
+        ) from error
 
     try:
         with console.status("[bold]Generating watermark..."):
@@ -57,6 +69,7 @@ def image(
                 opacity=opacity,
                 seed=seed,
                 count=count,
+                protected_regions=protected_regions,
             )
 
     except (ValueError, FileNotFoundError) as error:

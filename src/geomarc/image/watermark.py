@@ -2,6 +2,8 @@ from pathlib import Path
 
 from PIL import Image, UnidentifiedImageError
 
+from geomarc.generator.placement import ProtectedRegion
+
 from ..generator.pattern import generate_pattern
 from ..generator.placement import generate_placements
 from ..renders.img_render import render_pattern
@@ -15,6 +17,7 @@ def apply_watermark(
     opacity: int = 100,
     seed: int | None = None,
     count: int = 5,
+    protected_regions: list[ProtectedRegion] | None = None,
 ) -> None:
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -52,6 +55,7 @@ def apply_watermark(
                 opacity=opacity,
                 seed=seed,
                 count=count,
+                protected_regions=protected_regions,
             )
 
             result = Image.alpha_composite(
@@ -89,12 +93,14 @@ def _create_overlay(
     opacity: int,
     seed: int | None,
     count: int,
+    protected_regions: list[ProtectedRegion] | None = None,
 ) -> Image.Image:
     placements = generate_placements(
         image_width=image_width,
         image_height=image_height,
         count=count,
         seed=seed,
+        protected_regions=protected_regions,
     )
 
     overlay = Image.new(
