@@ -3,6 +3,7 @@ from pathlib import Path
 from PIL import Image, UnidentifiedImageError
 
 from geomarc.generator.placement import ProtectedRegion
+from geomarc.utils.validator import Validator
 
 from ..generator.pattern import generate_pattern
 from ..generator.placement import generate_placements
@@ -22,25 +23,10 @@ def apply_watermark(
     input_path = Path(input_path)
     output_path = Path(output_path)
 
-    if not input_path.is_file():
-        raise FileNotFoundError(
-            f"Input file not found: {input_path}"
-        )
-
-    if line_width <= 0:
-        raise ValueError(
-            "Line width must be greater than 0"
-        )
-
-    if not 0 <= opacity <= 255:
-        raise ValueError(
-            "Opacity must be between 0 and 255"
-        )
-
-    if not 3 <= count <= 10:
-        raise ValueError(
-            "Count must be between 3 and 10"
-        )
+    Validator(input_path, "Input file").is_file()
+    Validator(line_width, "Line width").gt(0)
+    Validator(opacity, "Opacity").between(0, 255)
+    Validator(count, "Count").between(3, 10)
 
     try:
         with Image.open(input_path) as image:

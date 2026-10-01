@@ -1,5 +1,7 @@
 from pathlib import Path
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
+
+from geomarc.utils.validator import Validator
 from .watermark import apply_watermark
 from geomarc.constants import SUPPORTED_EXTENSIONS
 from geomarc.utils.seed import _generate_seed as _file_seed
@@ -19,17 +21,9 @@ def process_folder(
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
 
-    if not input_dir.is_dir():
-        raise NotADirectoryError(
-            f"Input directory not found: {input_dir}"
-        )
-    if not 3 <= count <= 10:
-        raise ValueError("Count must be between 3 and 10")
-    
-    if on_unsupported not in {"skip", "fail"}:
-        raise ValueError(
-            "on_unsupported must be 'skip' or 'fail'"
-        )
+    Validator(input_dir, "Input directory").is_dir()
+    Validator(count, "Count").between(3, 10)
+    Validator(on_unsupported, "on_unsupported").in_choices({"skip", "fail"})
 
     output_dir.mkdir(
         parents=True,
