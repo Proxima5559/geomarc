@@ -11,19 +11,27 @@ class ProtectedRegion:
     def __post_init__(self) -> None:
         if self.left < 0:
             raise ValueError("Protected region left must be >= 0")
+        if self.left > 1:
+            raise ValueError("Protected region left must be <= 1")
 
         if self.top < 0:
             raise ValueError("Protected region top must be >= 0")
+        if self.top > 1:
+            raise ValueError("Protected region top must be <= 1")
 
         if self.right <= self.left:
             raise ValueError(
                 "Protected region right must be greater than left"
             )
+        if self.right > 1:
+            raise ValueError("Protected region right must be <= 1")
 
         if self.bottom <= self.top:
             raise ValueError(
                 "Protected region bottom must be greater than top"
             )
+        if self.bottom > 1:
+            raise ValueError("Protected region bottom must be <= 1")
 
     @property
     def box(self) -> tuple[float, float, float, float]:
