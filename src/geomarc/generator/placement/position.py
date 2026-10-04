@@ -1,6 +1,6 @@
 import random
 
-from geomarc.constants import EDGE_MARGIN_RATIO
+from geomarc.constants import EDGE_MARGIN_RATIO, EDGE_MARGIN_VARIATION
 
 from .bounds import rotated_bounds
 
@@ -18,9 +18,13 @@ def generate_position(
         watermark_height,
         rotation,
     )
+    margin_factor = rng.uniform(
+        1.0 - EDGE_MARGIN_VARIATION,
+        1.0 + EDGE_MARGIN_VARIATION,
+    )
 
-    margin_x = image_width * EDGE_MARGIN_RATIO
-    margin_y = image_height * EDGE_MARGIN_RATIO
+    margin_x = image_width * EDGE_MARGIN_RATIO * margin_factor
+    margin_y = image_height * EDGE_MARGIN_RATIO * margin_factor
 
     min_x = margin_x
     min_y = margin_y

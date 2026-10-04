@@ -13,6 +13,8 @@ from .placement_con import (
     ATTEMPTS_MULTIPLIER,
     EDGE_MARGIN_RATIO,
     MIN_SPACING_RATIO,
+    SIZE_MODE_RATIO,
+    EDGE_MARGIN_VARIATION
 )
 
 __all__ = [
@@ -28,4 +30,6 @@ __all__ = [
     "ATTEMPTS_MULTIPLIER",
     "EDGE_MARGIN_RATIO",
     "MIN_SPACING_RATIO",
+    "SIZE_MODE_RATIO",
+    "EDGE_MARGIN_VARIATION"
 ]

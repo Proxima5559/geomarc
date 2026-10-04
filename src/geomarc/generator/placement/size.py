@@ -4,6 +4,7 @@ from geomarc.constants import (
     MAX_DIMENSION_RATIO as DEFAULT_MAX_RATIO,
     MAX_SCALE as DEFAULT_MAX_SCALE,
     MIN_SCALE,
+    SIZE_MODE_RATIO
 )
 
 
@@ -18,10 +19,12 @@ def generate_size(
         image_width,
         image_height,
     )
+    mode_scale = MIN_SCALE + (max_scale - MIN_SCALE) * SIZE_MODE_RATIO
 
     scale = rng.triangular(
         MIN_SCALE,
         max_scale,
+        mode_scale
     )
 
     base_size = min_dimension * scale
