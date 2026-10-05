@@ -1,4 +1,4 @@
-import hashlib
+# import hashlib
 from pathlib import Path
 
 def _generate_seed(seed: int | None, *args: str | int | Path) -> int | None:
@@ -11,10 +11,10 @@ def _generate_seed(seed: int | None, *args: str | int | Path) -> int | None:
         for arg in args
     ]
     
-    unique_str = "_".join([str(seed)] + formatted_args)
-    hash_bytes = hashlib.sha256(unique_str.encode("utf-8")).digest()
+    unique_str = "_".join(formatted_args)
+    # hash_bytes = hashlib.sha256(unique_str.encode("utf-8")).digest()
     
-    return int.from_bytes(hash_bytes, byteorder="big") % 4294967296
+    return (seed + abs(hash(unique_str))) % 4294967296
 
 def _pattern_seed(seed: int | None, index: int) -> int | None:
     

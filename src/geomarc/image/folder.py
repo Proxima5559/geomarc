@@ -10,12 +10,13 @@ from geomarc.generator.placement import ProtectedRegion
 def process_folder(
     input_dir: str | Path,
     output_dir: str | Path,
+    on_unsupported: str = "skip",
     complexity: str = "medium",
+    style: str | None = None,
     line_width: float = 2,
     opacity: int = 100,
     seed: int | None = None,
     count: int = 5,
-    on_unsupported: str = "skip",
     protected_regions: list[ProtectedRegion] | None = None,
 ) -> tuple[int, int]:
     input_dir = Path(input_dir)
@@ -66,6 +67,7 @@ def process_folder(
                     input_path=input_path,
                     output_path=output_path,
                     complexity=complexity,
+                    style=style,
                     line_width=line_width,
                     opacity=opacity,
                     seed=_file_seed(seed, input_path),
@@ -74,7 +76,7 @@ def process_folder(
                 )
                 processed += 1
 
-            except ValueError as e:
+            except (ValueError, RuntimeError) as e:
                 if on_unsupported == "fail":
                     raise e
                 skipped += 1

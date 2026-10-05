@@ -44,12 +44,13 @@ console = Console()
 def folder(
     input_dir: Path,
     output_dir: Path,
+    on_unsupported: str, 
     complexity: str,
+    style: str | None,
     line_width: float,
     opacity: int,
     seed: int | None,
     count: int,
-    on_unsupported: str,
     protect: tuple[str, ...],
 ) -> None:
     """Apply a geometric watermark to all images in a folder."""
@@ -73,11 +74,12 @@ def folder(
                 input_dir=input_dir,
                 output_dir=output_dir,
                 complexity=complexity.lower(),
+                on_unsupported=on_unsupported.lower(),
+                style=style,
                 line_width=line_width,
                 opacity=opacity,
                 seed=seed,
                 count=count,
-                on_unsupported=on_unsupported.lower(),
                 protected_regions=protected_regions,
             )
 
