@@ -28,3 +28,40 @@ COMPLEXITY_SETTINGS = {
         "polygons": HIGH_POLYGONS,
     },
 }
+
+
+STYLE_CHOICES = [
+    "line_mesh",
+    "polygon_network",
+    "angular_sharp",
+    "minimal",
+    "dense_geometric",
+]
+
+STYLE_CONFIGS = {
+    "line_mesh": {
+        "points_multiplier": 1.0,
+        "lines_multiplier": 1.5,
+        "polygons_multiplier": 0.5,
+    },
+    "polygon_network": {
+        "points_multiplier": 1.2,
+        "lines_multiplier": 0.8,
+        "polygons_multiplier": 1.5,
+    },
+    "angular_sharp": {
+        "points_multiplier": 0.9,
+        "lines_multiplier": 1.2,
+        "polygons_multiplier": 1.0,
+    },
+    "minimal": {
+        "points_multiplier": 0.5,
+        "lines_multiplier": 0.5,
+        "polygons_multiplier": 0.2,
+    },
+    "dense_geometric": {
+        "points_multiplier": 1.8,
+        "lines_multiplier": 2.0,
+        "polygons_multiplier": 2.0,
+    },
+}

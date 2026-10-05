@@ -58,6 +58,23 @@ def common_watermark_options(func):
             show_default=True,
             help="Complexity of the generated pattern.",
         ),
+        click.option(
+            "--style",
+            "-st",
+            type=click.Choice(
+                [
+                    "line_mesh",
+                    "polygon_network",
+                    "angular_sharp",
+                    "minimal",
+                    "dense_geometric",
+                ],
+                case_sensitive=False,
+            ),
+            default=None,
+            show_default=True,
+            help="Geometric style of the watermark pattern.",
+        ),
 
         click.option(
             "--line-width",

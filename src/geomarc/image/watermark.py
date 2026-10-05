@@ -14,6 +14,7 @@ def apply_watermark(
     input_path: str | Path,
     output_path: str | Path,
     complexity: str = "medium",
+    style: str | None = None,
     line_width: float = 2,
     opacity: int = 100,
     seed: int | None = None,
@@ -37,6 +38,7 @@ def apply_watermark(
                 image_width=image.width,
                 image_height=image.height,
                 complexity=complexity,
+                style=style,
                 line_width=line_width,
                 opacity=opacity,
                 seed=seed,
@@ -75,6 +77,7 @@ def _create_overlay(
     image_width: int,
     image_height: int,
     complexity: str,
+    style: str | None,
     line_width: float,
     opacity: int,
     seed: int | None,
@@ -108,6 +111,7 @@ def _create_overlay(
             width=max(1, round(placement.width)),
             height=max(1, round(placement.height)),
             complexity=complexity,
+            style=style,
             seed=pattern_seed,
         )
 

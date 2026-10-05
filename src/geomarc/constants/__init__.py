@@ -1,5 +1,7 @@
 from .patterns_con import (
     COMPLEXITY_SETTINGS,
+    STYLE_CHOICES,
+    STYLE_CONFIGS,
 )
 from .folder_img_con import SUPPORTED_EXTENSIONS
 from .placement_con import (
@@ -14,7 +16,7 @@ from .placement_con import (
     EDGE_MARGIN_RATIO,
     MIN_SPACING_RATIO,
     SIZE_MODE_RATIO,
-    EDGE_MARGIN_VARIATION
+    EDGE_MARGIN_VARIATION,
 )
 
 __all__ = [
@@ -31,5 +33,7 @@ __all__ = [
     "EDGE_MARGIN_RATIO",
     "MIN_SPACING_RATIO",
     "SIZE_MODE_RATIO",
-    "EDGE_MARGIN_VARIATION"
+    "EDGE_MARGIN_VARIATION",
+    "STYLE_CHOICES",
+    "STYLE_CONFIGS",
 ]
