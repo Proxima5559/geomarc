@@ -2,6 +2,7 @@ from pathlib import Path
 import click
 from rich.console import Console
 
+from geomarc.cli.errors import handle_cli_errors
 from geomarc.image.folder import process_folder
 from geomarc.cli.common import (
     common_watermark_options,
@@ -59,16 +60,10 @@ def folder(
         raise click.UsageError(
             "Input and output directories must be different."
         )
-    try:
-        protected_regions = parse_protected_regions(
-            protect,
-        )
-    except click.BadParameter as error:
-        raise click.UsageError(
-            str(error)
-        ) from error
-    
-    try:
+
+    protected_regions = parse_protected_regions(protect)   
+  
+    with handle_cli_errors():
         with console.status("[bold]Processing folder..."):
             processed, skipped = process_folder(
                 input_dir=input_dir,
@@ -82,9 +77,6 @@ def folder(
                 count=count,
                 protected_regions=protected_regions,
             )
-
-    except (ValueError, NotADirectoryError, FileNotFoundError) as error:
-        raise click.ClickException(str(error)) from error
 
     console.print(
         f"[green]✓[/green] Folder processed: "

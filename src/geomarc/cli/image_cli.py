@@ -2,6 +2,7 @@ from pathlib import Path
 import click
 from rich.console import Console
 
+from geomarc.cli.errors import handle_cli_errors
 from geomarc.image.watermark import apply_watermark
 from geomarc.cli.common import (
     common_watermark_options,
@@ -51,16 +52,10 @@ def image(
         raise click.UsageError(
             "Input and output files must be different."
         )
-    try:
-        protected_regions = parse_protected_regions(
-            protect,
-        )
-    except click.BadParameter as error:
-        raise click.UsageError(
-            str(error)
-        ) from error
+   
+    protected_regions = parse_protected_regions(protect)
 
-    try:
+    with handle_cli_errors():
         with console.status("[bold]Generating watermark..."):
             apply_watermark(
                 input_path=input_path,
@@ -74,8 +69,6 @@ def image(
                 protected_regions=protected_regions,
             )
 
-    except (ValueError, FileNotFoundError) as error:
-        raise click.ClickException(str(error)) from error
 
     console.print(
         f"[green]✓[/green] Watermark applied: "

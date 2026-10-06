@@ -35,7 +35,8 @@ def parse_protected_regions(
             )
         except ValueError as error:
             raise click.BadParameter(
-                str(error)
+                str(error),
+                param_hint="--protect"
             ) from error
 
         regions.append(region)
