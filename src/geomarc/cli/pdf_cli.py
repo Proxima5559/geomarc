@@ -39,10 +39,12 @@ def pdf(
     output_path: Path,
     interval: int | None,
     complexity: str,
+    style: str,
     line_width: float,
     opacity: int,
     seed: int | None,
     count: int,
+    protect: tuple[str, ...],
 ) -> None:
     """Apply a geometric watermark to a PDF."""
 
@@ -57,11 +59,13 @@ def pdf(
                 input_path=input_path,
                 output_path=output_path,
                 complexity=complexity.lower(),
+                style=style,
                 line_width=line_width,
                 opacity=opacity,
                 seed=seed,
                 count=count,
                 interval=interval,
+                protect=protect,
             )
 
     except (ValueError, FileNotFoundError) as error:

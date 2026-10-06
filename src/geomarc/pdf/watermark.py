@@ -11,11 +11,13 @@ def apply_watermark(
     input_path: str | Path,
     output_path: str | Path,
     complexity: str = "medium",
+    style: str = "line_mesh",
     line_width: float = 2,
     opacity: int = 100,
     seed: int | None = None,
     count: int = 5,
     interval: int | None = None,
+    protect: tuple[str, ...] = (),
 ) -> None:
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -86,12 +88,14 @@ def apply_watermark(
                     _apply_page_watermark(
                         page=page,
                         complexity=complexity,
+                        style=style,
                         line_width=line_width,
                         opacity=opacity,
                         seed=seed,
                         count=count,
                         page_number=page_number,
                         file_name=input_path.name,
+                        protect=protect,
                     )
 
             output_path.parent.mkdir(
@@ -129,6 +133,7 @@ def _get_page_numbers(
 def _apply_page_watermark(
     page: pymupdf.Page,
     complexity: str,
+    style: str,
     line_width: float,
     opacity: int,
     seed: int | None,
@@ -164,4 +169,5 @@ def _apply_page_watermark(
             placement=placement,
             line_width=line_width,
             opacity=opacity,
+            style=style,
         )
