@@ -123,6 +123,15 @@ def common_watermark_options(func):
                 "Can be specified multiple times."
             ),
         ),
+        click.option(
+            "--inspect",
+            is_flag=True,
+            default=False,
+            help=(
+                "Show the generated watermark placements "
+                "without creating the output file."
+            ),
+        ),
     ]
 
     for option in reversed(options):

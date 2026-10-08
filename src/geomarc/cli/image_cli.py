@@ -1,8 +1,12 @@
+from importlib.metadata.diagnose import inspect
 from pathlib import Path
+from PIL import Image
 import click
 from rich.console import Console
 
 from geomarc.cli.errors import handle_cli_errors
+from geomarc.cli.inspect import show_inspection
+from geomarc.generator.placement import generate_placements
 from geomarc.image.watermark import apply_watermark
 from geomarc.cli.common import (
     common_watermark_options,
@@ -45,10 +49,11 @@ def image(
     seed: int | None,
     count: int,
     protect: tuple[str, ...],
+    inspect: bool,
 ) -> None:
     """Apply a geometric watermark to a single image."""
 
-    if output_path.resolve() == input_path.resolve():
+    if not inspect and output_path.resolve() == input_path.resolve():
         raise click.UsageError(
             "Input and output files must be different."
         )
@@ -56,6 +61,35 @@ def image(
     protected_regions = parse_protected_regions(protect)
 
     with handle_cli_errors():
+        if inspect:
+            with Image.open(input_path) as image_file:
+                image_width, image_height = image_file.size
+                image_format = image_file.format
+
+            placements = generate_placements(
+                image_width=image_width,
+                image_height=image_height,
+                count=count,
+                seed=seed,
+                protected_regions=protected_regions,
+            )
+
+            show_inspection(
+                console,
+                image_width=image_width,
+                image_height=image_height,
+                image_format=image_format,
+                complexity=complexity.lower(),
+                style=style.lower() if style else None,
+                line_width=line_width,
+                opacity=opacity,
+                seed=seed,
+                count=count,
+                placements=placements,
+            )
+
+            return
+
         with console.status("[bold]Generating watermark..."):
             apply_watermark(
                 input_path=input_path,
