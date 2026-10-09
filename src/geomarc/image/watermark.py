@@ -10,20 +10,19 @@ from ..generator.placement import generate_placements
 from ..renders.img_render import render_pattern
 from ..utils.seed import _pattern_seed
 
-def apply_watermark(
-    input_path: str | Path,
-    output_path: str | Path,
-    complexity: str = "medium",
-    style: str | None = None,
-    line_width: float = 2,
-    opacity: int = 100,
-    seed: int | None = None,
-    count: int = 5,
+
+
+def _process_watermark(
+    input_path: Path,
+    target_path: Path,
+    complexity: str,
+    style: str | None,
+    line_width: float,
+    opacity: int,
+    seed: int | None,
+    count: int,
     protected_regions: list[ProtectedRegion] | None = None,
 ) -> None:
-    input_path = Path(input_path)
-    output_path = Path(output_path)
-
     Validator(input_path, "Input file").is_file()
     Validator(line_width, "Line width").gt(0)
     Validator(opacity, "Opacity").between(0, 255)
@@ -46,31 +45,14 @@ def apply_watermark(
                 protected_regions=protected_regions,
             )
 
-            result = Image.alpha_composite(
-                image,
-                overlay,
-            )
+            result = Image.alpha_composite(image, overlay)
+            _save_image(image=result, output_path=target_path)
 
-            output_path.parent.mkdir(
-                parents=True,
-                exist_ok=True,
-            )
-
-            _save_image(
-                image=result,
-                output_path=output_path,
-            )
-
-    except (
-        UnidentifiedImageError,
-        ValueError,
-        OSError,
-        SyntaxError,
-    ) as error:
+    except (UnidentifiedImageError, ValueError, OSError, SyntaxError) as error:
         raise ValueError(
-            f"Invalid or corrupted image file "
-            f"'{input_path.name}': {error}"
+            f"Invalid or corrupted image file '{input_path.name}': {error}"
         ) from error
+
 
 
 def _create_overlay(
@@ -154,3 +136,51 @@ def _save_image(
         image = image.convert("RGB")
 
     image.save(output_path)
+
+
+def apply_watermark(
+    input_path: str | Path,
+    output_path: str | Path,
+    complexity: str = "medium",
+    style: str | None = None,
+    line_width: float = 2,
+    opacity: int = 100,
+    seed: int | None = None,
+    count: int = 5,
+    protected_regions: list[ProtectedRegion] | None = None,
+) -> None:
+    _process_watermark(
+        input_path=Path(input_path),
+        target_path=Path(output_path),
+        complexity=complexity,
+        style=style,
+        line_width=line_width,
+        opacity=opacity,
+        seed=seed,
+        count=count,
+        protected_regions=protected_regions,
+    )
+
+
+def preview_watermark(
+    input_path: str | Path,
+    preview_path: str | Path,
+    complexity: str = "medium",
+    style: str | None = None,
+    line_width: float = 2,
+    opacity: int = 100,
+    seed: int | None = None,
+    count: int = 5,
+    protected_regions: list[ProtectedRegion] | None = None,
+) -> None:
+    _process_watermark(
+        input_path=Path(input_path),
+        target_path=Path(preview_path),
+        complexity=complexity,
+        style=style,
+        line_width=line_width,
+        opacity=opacity,
+        seed=seed,
+        count=count,
+        protected_regions=protected_regions,
+    )

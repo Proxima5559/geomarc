@@ -7,7 +7,7 @@ from rich.console import Console
 from geomarc.cli.errors import handle_cli_errors
 from geomarc.cli.inspect import show_inspection
 from geomarc.generator.placement import generate_placements
-from geomarc.image.watermark import apply_watermark
+from geomarc.image.watermark import apply_watermark, preview_watermark
 from geomarc.cli.common import (
     common_watermark_options,
     parse_protected_regions,
@@ -38,10 +38,22 @@ def cli() -> None:
         path_type=Path,
     ),
 )
+
+@click.option(
+    "--preview",
+    type=click.Path(
+        dir_okay=False,
+        path_type=Path,
+    ),
+    default=None,
+    help="Generate a preview image without writing the final output.",
+)
+
 @common_watermark_options
 def image(
     input_path: Path,
     output_path: Path,
+    preview: Path | None,
     complexity: str,
     style: str | None, 
     line_width: float,
@@ -53,10 +65,12 @@ def image(
 ) -> None:
     """Apply a geometric watermark to a single image."""
 
-    if not inspect and output_path.resolve() == input_path.resolve():
-        raise click.UsageError(
-            "Input and output files must be different."
-        )
+    if not inspect:
+        if preview is None and input_path.resolve() == output_path.resolve():
+            raise click.UsageError("Input and output files must be different.")
+        
+        if preview is not None and preview.resolve() in (input_path.resolve(), output_path.resolve()):
+            raise click.UsageError("Preview file must be different from input and output files.")
    
     protected_regions = parse_protected_regions(protect)
 
@@ -88,6 +102,22 @@ def image(
                 placements=placements,
             )
 
+            return
+
+        if preview is not None:
+            with console.status("[bold]Generating watermark preview..."):
+                preview_watermark(
+                    input_path=input_path,
+                    preview_path=preview,
+                    complexity=complexity.lower(),
+                    style=style,
+                    line_width=line_width,
+                    opacity=opacity,
+                    seed=seed,
+                    count=count,
+                    protected_regions=protected_regions,
+                )
+            console.print(f"[green]✓[/green] Preview generated: [bold]{preview}[/bold]")
             return
 
         with console.status("[bold]Generating watermark..."):
