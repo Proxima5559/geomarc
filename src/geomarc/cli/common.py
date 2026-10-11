@@ -1,4 +1,5 @@
 import click
+from geomarc.config import load_config
 from geomarc.generator.placement import ProtectedRegion
 
 def parse_protected_regions(
@@ -43,6 +44,33 @@ def parse_protected_regions(
 
     return regions
 
+def get_effective_option(
+    ctx: click.Context | None, param_name: str, cli_value, default_value
+):
+    if (
+        ctx
+        and ctx.get_parameter_source(param_name)
+        == click.ParameterSource.COMMANDLINE
+    ):
+        return cli_value
+    config = load_config()
+    if param_name in config and config[param_name] is not None:
+        return config[param_name]
+    return default_value
+
+def resolve_watermark_options(
+    ctx: click.Context,
+    complexity: str,
+    line_width: float,
+    opacity: int,
+    count: int,
+) -> tuple[str, float, int, int]:
+    return (
+        get_effective_option(ctx, "complexity", complexity, "medium"),
+        get_effective_option(ctx, "line_width", line_width, 2.0),
+        get_effective_option(ctx, "opacity", opacity, 100),
+        get_effective_option(ctx, "count", count, 5),
+    )
 
 def common_watermark_options(func):
 

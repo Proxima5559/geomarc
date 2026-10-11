@@ -1,4 +1,3 @@
-from importlib.metadata.diagnose import inspect
 from pathlib import Path
 from PIL import Image
 import click
@@ -11,6 +10,7 @@ from geomarc.image.watermark import apply_watermark, preview_watermark
 from geomarc.cli.common import (
     common_watermark_options,
     parse_protected_regions,
+    resolve_watermark_options,
 )
 
 console = Console()
@@ -64,6 +64,10 @@ def image(
     inspect: bool,
 ) -> None:
     """Apply a geometric watermark to a single image."""
+    ctx = click.get_current_context()
+    complexity, line_width, opacity, count = resolve_watermark_options(
+        ctx, complexity, line_width, opacity, count
+    )
 
     if not inspect:
         if preview is None and input_path.resolve() == output_path.resolve():

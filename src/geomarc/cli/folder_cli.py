@@ -7,6 +7,7 @@ from geomarc.image.folder import process_folder
 from geomarc.cli.common import (
     common_watermark_options,
     parse_protected_regions,
+    resolve_watermark_options,
 )
 
 
@@ -55,6 +56,10 @@ def folder(
     protect: tuple[str, ...],
 ) -> None:
     """Apply a geometric watermark to all images in a folder."""
+    ctx = click.get_current_context()
+    complexity, line_width, opacity, count = resolve_watermark_options(
+        ctx, complexity, line_width, opacity, count
+    )
 
     if output_dir.resolve() == input_dir.resolve():
         raise click.UsageError(
