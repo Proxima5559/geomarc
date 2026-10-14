@@ -219,24 +219,20 @@ def apply_watermark_batch(
     for input_path in input_paths:
         target_path = out_dir / input_path.name
 
+
         try:
-            if input_path.resolve() == target_path.resolve():
-                results.append(BatchItemResult(
-                    input_path=input_path,
-                    output_path=target_path,
-                    success=False,
-                    error="output path cannot be the same as input path"
-                ))
-                continue
-        except Exception:
-            if input_path == target_path:
-                results.append(BatchItemResult(
-                    input_path=input_path,
-                    output_path=target_path,
-                    success=False,
-                    error="output path cannot be the same as input path"
-                ))
-                continue
+            is_same_path = input_path.resolve() == target_path.resolve()
+        except OSError:
+            is_same_path = input_path == target_path
+
+        if is_same_path:
+            results.append(BatchItemResult(
+                input_path=input_path,
+                output_path=target_path,
+                success=False,
+                error="output path cannot be the same as input path"
+            ))
+            continue
 
         try:
             processor(
