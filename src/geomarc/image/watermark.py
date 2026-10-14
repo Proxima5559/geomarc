@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from dataclasses import dataclass
 from PIL import Image, UnidentifiedImageError
 
 from geomarc.generator.placement import ProtectedRegion
@@ -184,3 +184,83 @@ def preview_watermark(
         count=count,
         protected_regions=protected_regions,
     )
+
+@dataclass
+class BatchItemResult:
+    input_path: Path
+    output_path: Path
+    success: bool
+    error: str | None = None
+
+
+def apply_watermark_batch(
+    inputs: list[str | Path] | tuple[str | Path, ...],
+    output_dir: str | Path,
+    complexity: str = "medium",
+    style: str | None = None,
+    line_width: float = 2.0,
+    opacity: int = 100,
+    seed: int | None = None,
+    count: int = 5,
+    protected_regions: list[ProtectedRegion] | None = None,
+    inspect: bool = False,
+) -> list[BatchItemResult]:
+    input_paths = [Path(p) for p in inputs]
+    out_dir = Path(output_dir)
+
+    filenames = [p.name for p in input_paths]
+    if len(filenames) != len(set(filenames)):
+        raise ValueError("Input files have duplicate names, which would cause output conflicts.")
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    results: list[BatchItemResult] = []
+    processor = preview_watermark if inspect else apply_watermark
+
+    for input_path in input_paths:
+        target_path = out_dir / input_path.name
+
+        try:
+            if input_path.resolve() == target_path.resolve():
+                results.append(BatchItemResult(
+                    input_path=input_path,
+                    output_path=target_path,
+                    success=False,
+                    error="output path cannot be the same as input path"
+                ))
+                continue
+        except Exception:
+            if input_path == target_path:
+                results.append(BatchItemResult(
+                    input_path=input_path,
+                    output_path=target_path,
+                    success=False,
+                    error="output path cannot be the same as input path"
+                ))
+                continue
+
+        try:
+            processor(
+                input_path=input_path,
+                output_path=target_path,
+                complexity=complexity,
+                style=style,
+                line_width=line_width,
+                opacity=opacity,
+                seed=seed,
+                count=count,
+                protected_regions=protected_regions,
+            )
+            results.append(BatchItemResult(
+                input_path=input_path,
+                output_path=target_path,
+                success=True
+            ))
+        except Exception as error:
+            results.append(BatchItemResult(
+                input_path=input_path,
+                output_path=target_path,
+                success=False,
+                error=str(error)
+            ))
+
+    return results

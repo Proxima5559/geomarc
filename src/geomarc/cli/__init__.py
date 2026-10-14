@@ -4,6 +4,7 @@ from .image_cli import image
 from .folder_cli import folder
 from .pdf_cli import pdf
 from .config_cli import config
+from .batch_cli import batch
 
 
 @click.group()
@@ -16,3 +17,4 @@ cli.add_command(image)
 cli.add_command(folder)
 cli.add_command(pdf)
 cli.add_command(config)
+cli.add_command(batch)
