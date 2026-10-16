@@ -40,6 +40,16 @@ def cli() -> None:
 )
 
 @click.option(
+            "--inspect",
+            is_flag=True,
+            default=False,
+            help=(
+                "Show the generated watermark placements "
+                "without creating the output file."
+            ),
+)
+
+@click.option(
     "--preview",
     type=click.Path(
         dir_okay=False,

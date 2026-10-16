@@ -89,7 +89,6 @@ def common_watermark_options(func):
         ),
         click.option(
             "--style",
-            "-st",
             type=click.Choice(
                 [
                     "line_mesh",
@@ -149,15 +148,6 @@ def common_watermark_options(func):
                 "Protected region in the form "
                 "left,top,right,bottom. "
                 "Can be specified multiple times."
-            ),
-        ),
-        click.option(
-            "--inspect",
-            is_flag=True,
-            default=False,
-            help=(
-                "Show the generated watermark placements "
-                "without creating the output file."
             ),
         ),
     ]

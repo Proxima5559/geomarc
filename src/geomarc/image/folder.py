@@ -10,6 +10,7 @@ from geomarc.generator.placement import ProtectedRegion
 def process_folder(
     input_dir: str | Path,
     output_dir: str | Path,
+    recursive: bool = False,
     on_unsupported: str = "skip",
     complexity: str = "medium",
     style: str | None = None,
@@ -33,10 +34,17 @@ def process_folder(
 
     files_to_process = []
     skipped = 0
+    iterator = input_dir.rglob("*") if recursive else input_dir.iterdir()
 
-    for input_path in sorted(input_dir.iterdir()):
+    for input_path in sorted(iterator):
         if not input_path.is_file():
             continue
+        
+        try:
+            input_path.relative_to(output_dir)
+            continue
+        except ValueError:
+            pass
 
         if input_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
             if on_unsupported == "fail":
@@ -60,7 +68,10 @@ def process_folder(
         task = progress.add_task("Watermarking images...", total=len(files_to_process))
 
         for input_path in files_to_process:
-            output_path = output_dir / input_path.name
+            relative_path = input_path.relative_to(input_dir)
+            output_path = output_dir / relative_path
+
+            output_path.parent.mkdir(parents=True, exist_ok=True)
             
             try:
                 apply_watermark(

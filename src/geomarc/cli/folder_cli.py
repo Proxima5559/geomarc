@@ -31,6 +31,13 @@ console = Console()
         path_type=Path,
     ),
 )
+@click.option(
+    "--recursive",
+    "-r",
+    is_flag=True,
+    help="Process images in all subfolders recursively.",
+)
+
 @common_watermark_options
 @click.option(
     "--on-unsupported",
@@ -46,6 +53,7 @@ console = Console()
 def folder(
     input_dir: Path,
     output_dir: Path,
+    recursive: bool,
     on_unsupported: str, 
     complexity: str,
     style: str | None,
@@ -73,6 +81,7 @@ def folder(
             processed, skipped = process_folder(
                 input_dir=input_dir,
                 output_dir=output_dir,
+                recursive=recursive,
                 complexity=complexity.lower(),
                 on_unsupported=on_unsupported.lower(),
                 style=style,
