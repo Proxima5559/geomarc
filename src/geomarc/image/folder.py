@@ -19,6 +19,9 @@ def process_folder(
     seed: int | None = None,
     count: int = 5,
     protected_regions: list[ProtectedRegion] | None = None,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> tuple[int, int]:
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -84,6 +87,9 @@ def process_folder(
                     seed=_file_seed(seed, input_path),
                     count=count,
                     protected_regions=protected_regions,
+                    custom_points=custom_points,
+                    custom_extra_lines=custom_extra_lines,
+                    custom_polygons=custom_polygons,
                 )
                 processed += 1
 

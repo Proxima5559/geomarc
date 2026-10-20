@@ -4,7 +4,7 @@ import click
 from rich.console import Console
 
 from geomarc.pdf.watermark import apply_watermark
-from geomarc.cli.common import common_watermark_options
+from geomarc.cli.common import common_watermark_options, resolve_custom_pattern
 
 
 console = Console()
@@ -35,10 +35,12 @@ console = Console()
 )
 @common_watermark_options
 def pdf(
+    ctx: click.Context,
     input_path: Path,
     output_path: Path,
     interval: int | None,
     complexity: str,
+    pattern_file: Path | None,
     style: str,
     line_width: float,
     opacity: int,
@@ -47,6 +49,10 @@ def pdf(
     protect: tuple[str, ...],
 ) -> None:
     """Apply a geometric watermark to a PDF."""
+
+    custom_points, custom_extra_lines, custom_polygons = (
+            resolve_custom_pattern(ctx, pattern_file)
+    )
 
     if output_path.resolve() == input_path.resolve():
         raise click.UsageError(
@@ -66,6 +72,9 @@ def pdf(
                 count=count,
                 interval=interval,
                 protect=protect,
+                custom_points=custom_points,
+                custom_extra_lines=custom_extra_lines,
+                custom_polygons=custom_polygons,
             )
 
     except (ValueError, FileNotFoundError) as error:

@@ -22,6 +22,9 @@ def _process_watermark(
     seed: int | None,
     count: int,
     protected_regions: list[ProtectedRegion] | None = None,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> None:
     Validator(input_path, "Input file").is_file()
     Validator(line_width, "Line width").gt(0)
@@ -43,6 +46,9 @@ def _process_watermark(
                 seed=seed,
                 count=count,
                 protected_regions=protected_regions,
+                custom_points=custom_points,
+                custom_extra_lines=custom_extra_lines,
+                custom_polygons=custom_polygons,
             )
 
             result = Image.alpha_composite(image, overlay)
@@ -65,6 +71,9 @@ def _create_overlay(
     seed: int | None,
     count: int,
     protected_regions: list[ProtectedRegion] | None = None,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> Image.Image:
     placements = generate_placements(
         image_width=image_width,
@@ -95,6 +104,9 @@ def _create_overlay(
             complexity=complexity,
             style=style,
             seed=pattern_seed,
+            custom_points=custom_points,
+            custom_extra_lines=custom_extra_lines,
+            custom_polygons=custom_polygons,
         )
 
         watermark = render_pattern(
@@ -148,6 +160,9 @@ def apply_watermark(
     seed: int | None = None,
     count: int = 5,
     protected_regions: list[ProtectedRegion] | None = None,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> None:
     _process_watermark(
         input_path=Path(input_path),
@@ -159,6 +174,9 @@ def apply_watermark(
         seed=seed,
         count=count,
         protected_regions=protected_regions,
+        custom_points=custom_points,
+        custom_extra_lines=custom_extra_lines,
+        custom_polygons=custom_polygons,
     )
 
 
@@ -172,6 +190,9 @@ def preview_watermark(
     seed: int | None = None,
     count: int = 5,
     protected_regions: list[ProtectedRegion] | None = None,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> None:
     _process_watermark(
         input_path=Path(input_path),
@@ -183,6 +204,9 @@ def preview_watermark(
         seed=seed,
         count=count,
         protected_regions=protected_regions,
+        custom_points=custom_points,
+        custom_extra_lines=custom_extra_lines,
+        custom_polygons=custom_polygons,
     )
 
 @dataclass
@@ -204,6 +228,9 @@ def apply_watermark_batch(
     count: int = 5,
     protected_regions: list[ProtectedRegion] | None = None,
     inspect: bool = False,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> list[BatchItemResult]:
     input_paths = [Path(p) for p in inputs]
     out_dir = Path(output_dir)
@@ -245,6 +272,9 @@ def apply_watermark_batch(
                 seed=seed,
                 count=count,
                 protected_regions=protected_regions,
+                custom_points=custom_points,
+                custom_extra_lines=custom_extra_lines,
+                custom_polygons=custom_polygons,
             )
             results.append(BatchItemResult(
                 input_path=input_path,

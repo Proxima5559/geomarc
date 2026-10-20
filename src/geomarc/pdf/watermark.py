@@ -18,6 +18,9 @@ def apply_watermark(
     count: int = 5,
     interval: int | None = None,
     protect: tuple[str, ...] = (),
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> None:
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -96,6 +99,9 @@ def apply_watermark(
                         page_number=page_number,
                         file_name=input_path.name,
                         protect=protect,
+                        custom_points=custom_points,
+                        custom_extra_lines=custom_extra_lines,
+                        custom_polygons=custom_polygons,
                     )
 
             output_path.parent.mkdir(
@@ -140,6 +146,9 @@ def _apply_page_watermark(
     count: int,
     page_number: int,
     file_name: str,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> None:
     page_width = page.rect.width
     page_height = page.rect.height
@@ -170,4 +179,7 @@ def _apply_page_watermark(
             line_width=line_width,
             opacity=opacity,
             style=style,
+            custom_points=custom_points,
+            custom_extra_lines=custom_extra_lines,
+            custom_polygons=custom_polygons,
         )

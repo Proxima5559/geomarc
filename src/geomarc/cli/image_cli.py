@@ -11,6 +11,7 @@ from geomarc.cli.common import (
     common_watermark_options,
     parse_protected_regions,
     resolve_watermark_options,
+    resolve_custom_pattern,
 )
 
 console = Console()
@@ -66,6 +67,7 @@ def image(
     preview: Path | None,
     complexity: str,
     style: str | None, 
+    pattern_file: Path | None,
     line_width: float,
     opacity: int,
     seed: int | None,
@@ -77,6 +79,10 @@ def image(
     ctx = click.get_current_context()
     complexity, line_width, opacity, count = resolve_watermark_options(
         ctx, complexity, line_width, opacity, count
+    )
+
+    custom_points, custom_extra_lines, custom_polygons = (
+        resolve_custom_pattern(ctx, pattern_file)
     )
 
     if not inspect:
@@ -130,6 +136,9 @@ def image(
                     seed=seed,
                     count=count,
                     protected_regions=protected_regions,
+                    custom_points=custom_points,
+                    custom_extra_lines=custom_extra_lines,
+                    custom_polygons=custom_polygons,
                 )
             console.print(f"[green]✓[/green] Preview generated: [bold]{preview}[/bold]")
             return
@@ -145,6 +154,9 @@ def image(
                 seed=seed,
                 count=count,
                 protected_regions=protected_regions,
+                custom_points=custom_points,
+                custom_extra_lines=custom_extra_lines,
+                custom_polygons=custom_polygons,
             )
 
 

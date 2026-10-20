@@ -6,6 +6,7 @@ from geomarc.image.watermark import apply_watermark_batch
 from .common import (
     common_watermark_options,
     parse_protected_regions,
+    resolve_custom_pattern,
     resolve_watermark_options,
     get_effective_option,
 )
@@ -34,12 +35,12 @@ def batch(
     output_dir: Path,
     complexity: str,
     style: str | None,
+    pattern_file: Path | None,
     line_width: float,
     opacity: int,
     seed: int | None,
     count: int,
     protect: tuple[str, ...],
-    inspect: bool,
 ) -> None:
     """Process multiple specified files with watermarks."""
     resolved_complexity, resolved_line_width, resolved_opacity, resolved_count = (
@@ -49,6 +50,10 @@ def batch(
     resolved_seed = get_effective_option(ctx, "seed", seed, None)
     protected_regions = parse_protected_regions(protect) if protect else None
 
+    custom_points, custom_extra_lines, custom_polygons = (
+            resolve_custom_pattern(ctx, pattern_file)
+     )
+    
     with handle_cli_errors():
         results = apply_watermark_batch(
             inputs=inputs,
@@ -60,7 +65,9 @@ def batch(
             seed=resolved_seed,
             count=resolved_count,
             protected_regions=protected_regions,
-            inspect=inspect,
+            custom_points=custom_points,
+            custom_extra_lines=custom_extra_lines,
+            custom_polygons=custom_polygons,
         )
 
     click.echo("Batch processing\n")

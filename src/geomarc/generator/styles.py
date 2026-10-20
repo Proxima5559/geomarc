@@ -11,12 +11,23 @@ def generate_styled_pattern_elements(
     base_extra_lines: int,
     base_polygons_count: int,
     rng: random.Random,
+    exact_counts: bool = False,
 ) -> tuple[list[Point], list[Line], list[Polygon]]:
     config = STYLE_CONFIGS.get(style, STYLE_CONFIGS["line_mesh"])
 
-    p_count = max(2, int(base_points_count * config["points_multiplier"]))
-    l_count = int(base_extra_lines * config["lines_multiplier"])
-    poly_count = int(base_polygons_count * config["polygons_multiplier"])
+    if exact_counts:
+        p_count = max(2, base_points_count)
+        l_count = base_extra_lines
+        poly_count = base_polygons_count
+    else:
+        p_count = max(
+            2,
+            int(base_points_count * config["points_multiplier"]),
+        )
+        l_count = int(base_extra_lines * config["lines_multiplier"])
+        poly_count = int(
+            base_polygons_count * config["polygons_multiplier"]
+        )
 
     if style == "minimal":
         points = _generate_minimal_points(width, height, p_count, rng)

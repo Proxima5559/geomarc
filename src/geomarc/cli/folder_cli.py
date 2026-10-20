@@ -7,6 +7,7 @@ from geomarc.image.folder import process_folder
 from geomarc.cli.common import (
     common_watermark_options,
     parse_protected_regions,
+    resolve_custom_pattern,
     resolve_watermark_options,
 )
 
@@ -56,17 +57,22 @@ def folder(
     recursive: bool,
     on_unsupported: str, 
     complexity: str,
+    pattern_file: Path | None,
     style: str | None,
     line_width: float,
     opacity: int,
     seed: int | None,
     count: int,
     protect: tuple[str, ...],
+
 ) -> None:
     """Apply a geometric watermark to all images in a folder."""
     ctx = click.get_current_context()
     complexity, line_width, opacity, count = resolve_watermark_options(
         ctx, complexity, line_width, opacity, count
+    )
+    custom_points, custom_extra_lines, custom_polygons = (
+            resolve_custom_pattern(ctx, pattern_file)
     )
 
     if output_dir.resolve() == input_dir.resolve():
@@ -90,6 +96,9 @@ def folder(
                 seed=seed,
                 count=count,
                 protected_regions=protected_regions,
+                custom_points=custom_points,
+                custom_extra_lines=custom_extra_lines,
+                custom_polygons=custom_polygons,
             )
 
     console.print(

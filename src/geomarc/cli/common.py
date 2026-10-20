@@ -1,6 +1,9 @@
 import click
+from pathlib import Path
+
 from geomarc.config import load_config
 from geomarc.generator.placement import ProtectedRegion
+from geomarc.generator.custom_pattern import load_custom_pattern
 
 def parse_protected_regions(
     values: tuple[str, ...],
@@ -72,6 +75,25 @@ def resolve_watermark_options(
         get_effective_option(ctx, "count", count, 5),
     )
 
+
+def resolve_custom_pattern(
+    ctx: click.Context,
+    pattern_file: Path | None,
+) -> tuple[int | None, int | None, int | None]:
+    effective_pattern_file = get_effective_option(
+        ctx,
+        "pattern_file",
+        pattern_file,
+        None,
+    )
+
+    if effective_pattern_file is None:
+        return None, None, None
+
+    pattern = load_custom_pattern(Path(effective_pattern_file))
+
+    return pattern.points, pattern.extra_lines, pattern.polygons
+
 def common_watermark_options(func):
 
     options = [
@@ -102,6 +124,20 @@ def common_watermark_options(func):
             default=None,
             show_default=True,
             help="Geometric style of the watermark pattern.",
+        ),
+
+        click.option(
+            "--pattern-file",
+            type=click.Path(
+                exists=True,
+                dir_okay=False,
+                path_type=Path,
+            ),
+            default=None,
+            help=(
+                "Path to a JSON file with a custom pattern. "
+                "It must contain points, extra_lines and polygons."
+            ),
         ),
 
         click.option(

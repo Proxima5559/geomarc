@@ -23,14 +23,36 @@ def generate_pattern(
     complexity: str = "medium",
     style: str | None = None,
     seed: int | None = None,
+    custom_points: int | None = None,
+    custom_extra_lines: int | None = None,
+    custom_polygons: int | None = None,
 ) -> Pattern:
-    if complexity not in COMPLEXITY_SETTINGS:
-        raise ValueError(
-            f"Unknown complexity: {complexity}. "
-            f"Choose: {', '.join(COMPLEXITY_SETTINGS)}"
-        )
 
-    settings = COMPLEXITY_SETTINGS[complexity]
+    custom_pattern_enabled = any(
+        value is not None
+        for value in (
+            custom_points,
+            custom_extra_lines,
+            custom_polygons,
+        )
+    )
+     
+    if not custom_pattern_enabled:
+        if complexity not in COMPLEXITY_SETTINGS:
+            raise ValueError(
+                f"Unknown complexity: {complexity}. "
+                f"Choose: {', '.join(COMPLEXITY_SETTINGS)}"
+            )
+
+        settings = COMPLEXITY_SETTINGS[complexity]
+        exact_counts = False  # ДОБАВЛЕНО: обычные complexity работают по-старому.
+    else:
+        settings = {
+            "points": custom_points or 0,
+            "extra_lines": custom_extra_lines or 0,
+            "polygons": custom_polygons or 0,
+        }
+        exact_counts = True  
 
     rng = random.Random(seed)
 
@@ -51,6 +73,7 @@ def generate_pattern(
         base_extra_lines=settings["extra_lines"],
         base_polygons_count=settings["polygons"],
         rng=rng,
+        exact_counts=exact_counts,
     )
 
     return Pattern(

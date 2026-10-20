@@ -2,6 +2,9 @@ from .patterns_con import (
     COMPLEXITY_SETTINGS,
     STYLE_CHOICES,
     STYLE_CONFIGS,
+    MAX_EXTRA_LINES,
+    MAX_POINTS,
+    MAX_POLYGONS
 )
 from .folder_img_con import SUPPORTED_EXTENSIONS
 from .placement_con import (
@@ -36,4 +39,7 @@ __all__ = [
     "EDGE_MARGIN_VARIATION",
     "STYLE_CHOICES",
     "STYLE_CONFIGS",
+    "MAX_EXTRA_LINES",
+    "MAX_POINTS",
+    "MAX_POLYGONS"
 ]
