@@ -13,6 +13,7 @@ from geomarc.cli.common import (
     resolve_watermark_options,
     resolve_custom_pattern,
 )
+from geomarc.cli.formater import print_header, print_parameters, print_success
 
 console = Console()
 
@@ -123,6 +124,24 @@ def image(
             )
 
             return
+        print_header(console, "GEOMARC")
+        
+        print_parameters(
+            console,
+            {
+                "Input": input_path,
+                "Output": preview if preview is not None else output_path,
+                "Mode": "preview" if preview is not None else "final",
+                "Complexity": complexity.lower(),
+                "Style": style,
+                "Line width": line_width,
+                "Opacity": opacity,
+                "Seed": seed,
+                "Watermarks": count,
+                "Protected regions": len(protected_regions),
+                "Custom pattern": pattern_file,
+            },
+        )
 
         if preview is not None:
             with console.status("[bold]Generating watermark preview..."):
@@ -140,7 +159,11 @@ def image(
                     custom_extra_lines=custom_extra_lines,
                     custom_polygons=custom_polygons,
                 )
-            console.print(f"[green]✓[/green] Preview generated: [bold]{preview}[/bold]")
+            print_success(
+                console,
+                f"Preview generated: {preview}. "
+                f"Final output was not written.",
+            )
             return
 
         with console.status("[bold]Generating watermark..."):
@@ -160,7 +183,7 @@ def image(
             )
 
 
-    console.print(
-        f"[green]✓[/green] Watermark applied: "
-        f"[bold]{output_path}[/bold]"
+    print_success(
+        console,
+        f"Watermark applied: {output_path}"
     )
