@@ -10,6 +10,12 @@ from geomarc.cli.common import (
     resolve_custom_pattern,
     resolve_watermark_options,
 )
+from geomarc.cli.formater import (  
+    print_header, 
+    print_parameters, 
+    print_success, 
+    print_processing_summary
+)
 
 
 console = Console()
@@ -83,6 +89,26 @@ def folder(
     protected_regions = parse_protected_regions(protect)   
   
     with handle_cli_errors():
+        print_header(console, "GEOMARC|FOLDERS")
+
+        print_parameters(
+            console,
+            {
+                "Input directory": input_dir,
+                "Output directory": output_dir,
+                "Recursive": recursive,
+                "Unsupported files": on_unsupported.lower(),
+                "Complexity": complexity.lower(),
+                "Style": style,
+                "Line width": line_width,
+                "Opacity": opacity,
+                "Seed": seed,
+                "Watermarks": count,
+                "Protected regions": len(protected_regions),
+                "Custom pattern": pattern_file,
+            },
+        )
+
         with console.status("[bold]Processing folder..."):
             processed, skipped = process_folder(
                 input_dir=input_dir,
@@ -101,9 +127,11 @@ def folder(
                 custom_polygons=custom_polygons,
             )
 
-    console.print(
-        f"[green]✓[/green] Folder processed: "
-        f"processed [bold]{processed}[/bold], "
-        f"skipped [bold]{skipped}[/bold] -> "
-        f"[bold]{output_dir}[/bold]"
+    print_processing_summary(
+        console,
+        successful=processed,
+        failed=0,
+        skipped=skipped,
     )
+
+    print_success(console, f"Results saved to: {output_dir}")
