@@ -1,5 +1,6 @@
 from pathlib import Path
 import click
+from rich.console import Console
 
 from geomarc.cli.errors import handle_cli_errors
 from geomarc.image.watermark import apply_watermark_batch
@@ -11,7 +12,15 @@ from .common import (
     get_effective_option,
 )
 
+from geomarc.cli.formater import (  
+    print_header, 
+    print_parameters, 
+    print_success, 
+    print_error,
+    print_processing_summary
+)
 
+console = Console()
 
 @click.command(name="batch")
 @click.argument(
@@ -55,6 +64,26 @@ def batch(
      )
     
     with handle_cli_errors():
+        print_header(console, "GEOMARC|BATCH")
+
+        print_parameters(
+            console,
+            {
+                "Input files": len(inputs),
+                "Output directory": output_dir,
+                "Complexity": resolved_complexity.lower(),
+                "Style": resolved_style,
+                "Line width": resolved_line_width,
+                "Opacity": resolved_opacity,
+                "Seed": resolved_seed,
+                "Watermarks": resolved_count,
+                "Protected regions": (
+                    len(protected_regions) if protected_regions else 0
+                ),
+                "Custom pattern": pattern_file,
+            },
+        )
+
         results = apply_watermark_batch(
             inputs=inputs,
             output_dir=output_dir,
@@ -70,18 +99,24 @@ def batch(
             custom_polygons=custom_polygons,
         )
 
-    click.echo("Batch processing\n")
-    processed_count = 0
-    failed_count = 0
+    console.print()
 
-    for res in results:
-        if res.success:
-            click.echo(f"✓ {res.input_path.name} → {res.output_path}")
-            processed_count += 1
+    for result in results:
+        if result.success:
+            print_success(
+                console,
+                f"{result.input_path.name} → {result.output_path}",
+            )
+            successful_count += 1
         else:
-            click.echo(f"✗ {res.input_path.name} — {res.error}")
+            print_error(
+                console,
+                f"{result.input_path.name} — {result.error}",
+            )
             failed_count += 1
 
-    click.echo("\nSummary")
-    click.echo(f"  Processed: {processed_count}")
-    click.echo(f"  Failed:    {failed_count}")
+    print_processing_summary(
+        console,
+        successful=successful_count,
+        failed=failed_count,
+    )
