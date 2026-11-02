@@ -57,3 +57,6 @@ class Validator:
             return self
         method = getattr(self, method_name)
         return method(*args, **kwargs)
+    
+    def default(self, default_value: Any) -> Any:
+        return default_value if self.value is None else self.value

@@ -1,12 +1,13 @@
 from PIL import Image, ImageDraw
 
 from ..generator.pattern import Pattern
-
+from ..utils.colors import Color
 
 def render_pattern(
     pattern: Pattern,
     line_width: float,
     opacity: int,
+    color: Color = (255, 255, 255),
 ) -> Image.Image:
     if line_width <= 0:
         raise ValueError("Line width must be greater than 0")
@@ -30,6 +31,7 @@ def render_pattern(
         pattern=pattern,
         line_width=line_width,
         opacity=opacity,
+        color=color
     )
 
     return image
@@ -40,9 +42,11 @@ def _draw_pattern(
     pattern: Pattern,
     line_width: float,
     opacity: int,
+    color: Color,
 ) -> None:
     width = max(1, round(line_width))
 
+    fill = (*color, opacity)
     for line in pattern.lines:
         draw.line(
             (
@@ -51,7 +55,7 @@ def _draw_pattern(
                 line.end.x,
                 line.end.y,
             ),
-            fill=(255, 255, 255, opacity),
+            fill=fill,
             width=width,
         )
 
@@ -66,6 +70,6 @@ def _draw_pattern(
 
         draw.line(
             points + [points[0]],
-            fill=(255, 255, 255, opacity),
+            fill=fill,
             width=width,
         )

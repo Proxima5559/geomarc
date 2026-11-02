@@ -9,7 +9,10 @@ from ..generator.pattern import generate_pattern
 from ..generator.placement import generate_placements
 from ..renders.img_render import render_pattern
 from ..utils.seed import _pattern_seed
-
+from ..utils.colors import (
+    Color,
+    resolve_color_for_index,
+)
 
 
 def _process_watermark(
@@ -25,11 +28,14 @@ def _process_watermark(
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[Color] | str | None = None,
 ) -> None:
     Validator(input_path, "Input file").is_file()
     Validator(line_width, "Line width").gt(0)
     Validator(opacity, "Opacity").between(0, 255)
     Validator(count, "Count").between(3, 10)
+
+    colors = Validator(colors, "Colors").default([(255, 255, 255)])
 
     try:
         with Image.open(input_path) as image:
@@ -49,6 +55,7 @@ def _process_watermark(
                 custom_points=custom_points,
                 custom_extra_lines=custom_extra_lines,
                 custom_polygons=custom_polygons,
+                colors=colors,
             )
 
             result = Image.alpha_composite(image, overlay)
@@ -74,6 +81,7 @@ def _create_overlay(
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[Color] | str = (255, 255, 255),
 ) -> Image.Image:
     placements = generate_placements(
         image_width=image_width,
@@ -108,17 +116,23 @@ def _create_overlay(
             custom_extra_lines=custom_extra_lines,
             custom_polygons=custom_polygons,
         )
-
+        color = resolve_color_for_index(
+            color=colors,
+            index=index,
+            seed=seed,
+        )
         watermark = render_pattern(
             pattern=pattern,
             line_width=line_width,
             opacity=opacity,
+            color=color,
         )
 
         rotated = watermark.rotate(
             placement.rotation,
             expand=True,
             resample=Image.Resampling.BICUBIC,
+            fillcolor=(0, 0, 0, 0),
         )
 
         overlay.alpha_composite(
@@ -163,6 +177,7 @@ def apply_watermark(
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[Color] | str | None = None,
 ) -> None:
     _process_watermark(
         input_path=Path(input_path),
@@ -177,6 +192,7 @@ def apply_watermark(
         custom_points=custom_points,
         custom_extra_lines=custom_extra_lines,
         custom_polygons=custom_polygons,
+        colors=colors,
     )
 
 
@@ -193,6 +209,7 @@ def preview_watermark(
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[Color] | str | None = None,
 ) -> None:
     _process_watermark(
         input_path=Path(input_path),
@@ -207,6 +224,7 @@ def preview_watermark(
         custom_points=custom_points,
         custom_extra_lines=custom_extra_lines,
         custom_polygons=custom_polygons,
+        colors=colors,
     )
 
 @dataclass
@@ -231,6 +249,7 @@ def apply_watermark_batch(
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[Color] | str | None = None,
 ) -> list[BatchItemResult]:
     input_paths = [Path(p) for p in inputs]
     out_dir = Path(output_dir)
@@ -275,6 +294,7 @@ def apply_watermark_batch(
                 custom_points=custom_points,
                 custom_extra_lines=custom_extra_lines,
                 custom_polygons=custom_polygons,
+                colors=colors,
             )
             results.append(BatchItemResult(
                 input_path=input_path,

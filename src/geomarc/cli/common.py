@@ -4,6 +4,7 @@ from pathlib import Path
 from geomarc.config import load_config
 from geomarc.generator.placement import ProtectedRegion
 from geomarc.generator.custom_pattern import load_custom_pattern
+from geomarc.utils.colors import parse_colors
 
 def parse_protected_regions(
     values: tuple[str, ...],
@@ -75,6 +76,34 @@ def resolve_watermark_options(
         get_effective_option(ctx, "count", count, 5),
     )
 
+
+def resolve_watermark_colors(
+    ctx: click.Context,
+    color: str | None,
+    colors: str | None,
+) -> list[tuple[int, int, int]] | str:
+    if colors is not None:
+        raw_colors = colors
+
+    elif color is not None:
+        raw_colors = color
+
+    else:
+        raw_colors = get_effective_option(
+            ctx,
+            "colors",
+            None,
+            None,
+        )
+
+    try:
+        return parse_colors(raw_colors)
+
+    except ValueError as error:
+        raise click.BadParameter(
+            str(error),
+            param_hint="--color/--colors",
+        ) from error
 
 def resolve_custom_pattern(
     ctx: click.Context,
@@ -156,6 +185,30 @@ def common_watermark_options(func):
             default=100,
             show_default=True,
             help="Watermark opacity.",
+        ),
+        
+        click.option(
+            "--color",
+            type=str,
+            default=None,
+            help=(
+                "Watermark color. "
+                "Use HEX ('#FF5733'), RGB ('255,87,51') "
+                "or 'random'."
+            ),
+        ),
+
+        click.option(
+            "--colors",
+            type=str,
+            default=None,
+            help=(
+                "Watermark color palette. "
+                "Colors are separated by commas, for example: "
+                "'#FF0000,#00FF00,#0000FF'. "
+                "RGB colors inside a palette must use spaces: "
+                "'#FF0000,255 0 0'."
+            ),
         ),
 
         click.option(

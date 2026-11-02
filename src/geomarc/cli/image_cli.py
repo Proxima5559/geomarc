@@ -10,6 +10,7 @@ from geomarc.image.watermark import apply_watermark, preview_watermark
 from geomarc.cli.common import (
     common_watermark_options,
     parse_protected_regions,
+    resolve_watermark_colors,
     resolve_watermark_options,
     resolve_custom_pattern,
 )
@@ -75,12 +76,15 @@ def image(
     count: int,
     protect: tuple[str, ...],
     inspect: bool,
+    color: str | None,
+    colors: str | None,
 ) -> None:
     """Apply a geometric watermark to a single image."""
     ctx = click.get_current_context()
     complexity, line_width, opacity, count = resolve_watermark_options(
         ctx, complexity, line_width, opacity, count
     )
+    resolved_colors = resolve_watermark_colors(ctx, color, colors)
 
     custom_points, custom_extra_lines, custom_polygons = (
         resolve_custom_pattern(ctx, pattern_file)
@@ -158,6 +162,7 @@ def image(
                     custom_points=custom_points,
                     custom_extra_lines=custom_extra_lines,
                     custom_polygons=custom_polygons,
+                    colors=resolved_colors,
                 )
             print_success(
                 console,
@@ -180,6 +185,7 @@ def image(
                 custom_points=custom_points,
                 custom_extra_lines=custom_extra_lines,
                 custom_polygons=custom_polygons,
+                colors=resolved_colors,
             )
 
 

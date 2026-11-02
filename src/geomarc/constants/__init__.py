@@ -21,6 +21,14 @@ from .placement_con import (
     SIZE_MODE_RATIO,
     EDGE_MARGIN_VARIATION,
 )
+from .color_con import (
+    DEFAULT_COLOR_VALUE,
+    RANDOM_COLOR,
+    HEX_COLOR_PATTERN,
+    COLOR_SEPARATOR,
+    SPECIAL_COLORS,
+    DEFAULT_COLOR
+)
 
 __all__ = [
     "COMPLEXITY_SETTINGS",
@@ -41,5 +49,11 @@ __all__ = [
     "STYLE_CONFIGS",
     "MAX_EXTRA_LINES",
     "MAX_POINTS",
-    "MAX_POLYGONS"
+    "MAX_POLYGONS",
+    "DEFAULT_COLOR_VALUE",
+    "RANDOM_COLOR",
+    "HEX_COLOR_PATTERN",
+    "COLOR_SEPARATOR",
+    "SPECIAL_COLORS",
+    "DEFAULT_COLOR",
 ]

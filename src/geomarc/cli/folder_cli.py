@@ -8,6 +8,7 @@ from geomarc.cli.common import (
     common_watermark_options,
     parse_protected_regions,
     resolve_custom_pattern,
+    resolve_watermark_colors,
     resolve_watermark_options,
 )
 from geomarc.cli.formater import (  
@@ -70,6 +71,8 @@ def folder(
     seed: int | None,
     count: int,
     protect: tuple[str, ...],
+    color: str | None,
+    colors: str | None,
 
 ) -> None:
     """Apply a geometric watermark to all images in a folder."""
@@ -80,6 +83,7 @@ def folder(
     custom_points, custom_extra_lines, custom_polygons = (
             resolve_custom_pattern(ctx, pattern_file)
     )
+    resolved_colors = resolve_watermark_colors(ctx, color, colors)
 
     if output_dir.resolve() == input_dir.resolve():
         raise click.UsageError(
@@ -125,6 +129,7 @@ def folder(
                 custom_points=custom_points,
                 custom_extra_lines=custom_extra_lines,
                 custom_polygons=custom_polygons,
+                colors=resolved_colors,
             )
 
     print_processing_summary(

@@ -22,6 +22,7 @@ def process_folder(
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[str] | str | None = None,
 ) -> tuple[int, int]:
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -90,6 +91,7 @@ def process_folder(
                     custom_points=custom_points,
                     custom_extra_lines=custom_extra_lines,
                     custom_polygons=custom_polygons,
+                    colors=colors,
                 )
                 processed += 1
 
