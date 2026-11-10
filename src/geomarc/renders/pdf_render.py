@@ -2,6 +2,7 @@
 import pymupdf
 from ..generator.pattern import Pattern
 from ..generator.placement import Placement
+from ..utils.colors import Color, color_to_pdf
 
 def render_pattern(
     page: pymupdf.Page,
@@ -9,6 +10,7 @@ def render_pattern(
     placement: Placement,
     line_width: float,
     opacity: int,
+    color: Color = (0, 0, 0),
 ) -> None:
     if line_width <= 0:
         raise ValueError("Line width must be greater than 0")
@@ -21,6 +23,7 @@ def render_pattern(
         placement=placement,
         line_width=line_width,
         opacity=opacity,
+        color=color,
     )
 
 def _draw_pattern(
@@ -29,8 +32,10 @@ def _draw_pattern(
     placement: Placement,
     line_width: float,
     opacity: int,
+    color: Color,
 ) -> None:
     stroke_opacity = opacity / 255.0
+    pdf_color = color_to_pdf(color)
     matrix = _get_transformation_matrix(pattern, placement)
     
     for line in pattern.lines:
@@ -40,7 +45,7 @@ def _draw_pattern(
         page.draw_line(
             start,
             end,
-            color=(0, 0, 0),
+            color=pdf_color,
             width=line_width,
             stroke_opacity=stroke_opacity,
             overlay=True,
@@ -55,7 +60,7 @@ def _draw_pattern(
         
         page.draw_polyline(
             points,
-            color=(0, 0, 0),
+            color=pdf_color,
             width=line_width,
             stroke_opacity=stroke_opacity,
             overlay=True,

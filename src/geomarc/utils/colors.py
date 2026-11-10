@@ -120,3 +120,13 @@ def _random_color(seed: int | None, index: int) -> Color:
         rng.randint(0, 255),
         rng.randint(0, 255),
     )
+
+def color_to_pdf(color: Color) -> tuple[float, float, float]:
+
+    red, green, blue = color
+
+    return (
+        red / 255,
+        green / 255,
+        blue / 255,
+    )

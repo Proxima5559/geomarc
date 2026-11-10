@@ -6,6 +6,11 @@ from ..generator.pattern import generate_pattern
 from ..generator.placement import generate_placements
 from ..renders.pdf_render import render_pattern
 from ..utils.seed import _generate_seed
+from ..utils.colors import (
+    Color,
+    color_to_pdf,
+    resolve_color_for_index,
+)
 
 def apply_watermark(
     input_path: str | Path,
@@ -21,6 +26,7 @@ def apply_watermark(
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[Color] | str | None = None,
 ) -> None:
     input_path = Path(input_path)
     output_path = Path(output_path)
@@ -30,7 +36,8 @@ def apply_watermark(
     Validator(opacity, "Opacity").between(0, 255)
     Validator(count, "Count").between(3, 10)
     Validator(interval, "Interval").maybe("gt", 0)
-
+    colors = Validator(colors, "Colors").default([(255, 255, 255)])
+    
     try:
         document = pymupdf.open(input_path)
 
@@ -79,14 +86,23 @@ def apply_watermark(
                         
                         layout_cache[cache_key] = generated_pairs
 
-                    for pattern, placement in layout_cache[cache_key]:
-                        render_pattern(
-                            page=page,
-                            pattern=pattern,
-                            placement=placement,
-                            line_width=line_width,
-                            opacity=opacity,
-                        )
+                    for index, (pattern, placement) in enumerate(
+                            layout_cache[cache_key]
+                        ):
+                            color = resolve_color_for_index(
+                                color=colors,
+                                index=index,
+                                seed=seed,
+                            )
+
+                            render_pattern(
+                                page=page,
+                                pattern=pattern,
+                                placement=placement,
+                                line_width=line_width,
+                                opacity=opacity,
+                                color=color,
+                            )
                 else:
                     _apply_page_watermark(
                         page=page,
@@ -102,6 +118,7 @@ def apply_watermark(
                         custom_points=custom_points,
                         custom_extra_lines=custom_extra_lines,
                         custom_polygons=custom_polygons,
+                        colors=colors,
                     )
 
             output_path.parent.mkdir(
@@ -146,9 +163,11 @@ def _apply_page_watermark(
     count: int,
     page_number: int,
     file_name: str,
+    protect: tuple[str, ...] = (),
     custom_points: int | None = None,
     custom_extra_lines: int | None = None,
     custom_polygons: int | None = None,
+    colors: list[Color] | str = (255, 255, 255),
 ) -> None:
     page_width = page.rect.width
     page_height = page.rect.height
@@ -160,6 +179,7 @@ def _apply_page_watermark(
         image_height=round(page_height),
         count=count,
         seed=page_seed,
+        protected_regions=protect,
     )
 
     for index, placement in enumerate(placements):
@@ -170,6 +190,11 @@ def _apply_page_watermark(
             height=max(1, round(placement.height)),
             complexity=complexity,
             seed=pattern_seed,
+        )
+        color = resolve_color_for_index(
+            color=colors,
+            index=index,
+            seed=seed,
         )
 
         render_pattern(
@@ -182,4 +207,6 @@ def _apply_page_watermark(
             custom_points=custom_points,
             custom_extra_lines=custom_extra_lines,
             custom_polygons=custom_polygons,
+            color=color,
+            protect=protect,
         )
