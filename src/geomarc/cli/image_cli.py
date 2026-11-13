@@ -1,7 +1,6 @@
 from pathlib import Path
 from PIL import Image
 import click
-from rich.console import Console
 
 from geomarc.cli.errors import handle_cli_errors
 from geomarc.cli.inspect import show_inspection
@@ -13,10 +12,10 @@ from geomarc.cli.common import (
     resolve_watermark_colors,
     resolve_watermark_options,
     resolve_custom_pattern,
+    console,
 )
 from geomarc.cli.formater import print_header, print_parameters, print_success
 
-console = Console()
 
 
 @click.group()

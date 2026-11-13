@@ -5,6 +5,9 @@ from geomarc.config import load_config
 from geomarc.generator.placement import ProtectedRegion
 from geomarc.generator.custom_pattern import load_custom_pattern
 from geomarc.utils.colors import parse_colors
+from rich.console import Console
+
+console = Console()
 
 def parse_protected_regions(
     values: tuple[str, ...],

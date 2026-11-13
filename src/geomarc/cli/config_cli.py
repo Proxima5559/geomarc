@@ -1,5 +1,4 @@
 import click
-from rich.console import Console
 
 from geomarc.cli.errors import handle_cli_errors
 from geomarc.config import (
@@ -8,8 +7,8 @@ from geomarc.config import (
     reset_config,
     VALID_KEYS,
 )
+from geomarc.cli.common import console
 
-console = Console()
 
 
 @click.group()

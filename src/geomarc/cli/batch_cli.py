@@ -10,6 +10,7 @@ from .common import (
     resolve_custom_pattern,
     resolve_watermark_options,
     get_effective_option,
+    console,
 )
 
 from geomarc.cli.formater import (  
@@ -20,7 +21,6 @@ from geomarc.cli.formater import (
     print_processing_summary
 )
 
-console = Console()
 
 @click.command(name="batch")
 @click.argument(

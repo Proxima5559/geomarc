@@ -1,13 +1,11 @@
 from pathlib import Path
 
 import click
-from rich.console import Console
 
 from geomarc.pdf.watermark import apply_watermark
-from geomarc.cli.common import common_watermark_options, resolve_custom_pattern, resolve_watermark_colors
+from geomarc.cli.common import common_watermark_options, resolve_custom_pattern, resolve_watermark_colors, console
 
 
-console = Console()
 
 
 @click.command()
